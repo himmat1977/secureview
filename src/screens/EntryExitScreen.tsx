@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { ScreenHeader } from '../components/common';
 import { theme } from '../theme';
-import { eventService } from '../services';
+import { eventService, locationService } from '../services';
 import { usePagination } from '../hooks';
 import { Event } from '../types/camera';
 
@@ -20,7 +20,8 @@ interface EntryExitEvent extends Event {
 }
 
 export const EntryExitScreen: React.FC = () => {
-  const [selectedLocation, setSelectedLocation] = useState('Downtown Office');
+  const [selectedLocation, setSelectedLocation] = useState('All Locations');
+  const [locations, setLocations] = useState<Array<{ id: number; name: string }>>([]);
 
   const {
     items: events,
@@ -31,7 +32,27 @@ export const EntryExitScreen: React.FC = () => {
 
   useEffect(() => {
     refresh();
+    fetchLocations();
   }, []);
+
+  const fetchLocations = async () => {
+    try {
+      const response = await locationService.getLocations({ page: 1, size: 100 });
+      const locationData = response._embedded?.content || response.content || [];
+      const formattedLocations = locationData.map((loc: any) => ({
+        id: loc.ycl_id,
+        name: loc.ycl_name,
+      }));
+      setLocations([{ id: 0, name: 'All Locations' }, ...formattedLocations]);
+    } catch (error) {
+      console.error('Error fetching locations:', error);
+    }
+  };
+
+  const handleLocationChange = (location: { id: number; name: string }) => {
+    setSelectedLocation(location.name);
+    // TODO: Filter events by location
+  };
 
   const formatTimeAgo = (timestamp: string): string => {
     const now = new Date().getTime();
@@ -87,7 +108,11 @@ export const EntryExitScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScreenHeader selectedLocation={selectedLocation} />
+      <ScreenHeader
+        selectedLocation={selectedLocation}
+        locations={locations}
+        onLocationChange={handleLocationChange}
+      />
 
       <View style={styles.content}>
         <FlatList

@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { ScreenHeader } from '../components/common';
 import { theme } from '../theme';
-import { eventService } from '../services';
+import { eventService, locationService } from '../services';
 import { usePagination } from '../hooks';
 import { Event } from '../types/camera';
 
@@ -26,8 +26,9 @@ const EVENT_ICONS: Record<string, string> = {
 };
 
 export const EventsScreen: React.FC = () => {
-  const [selectedLocation, setSelectedLocation] = useState('Downtown Office');
+  const [selectedLocation, setSelectedLocation] = useState('All Locations');
   const [selectedFilter, setSelectedFilter] = useState('All');
+  const [locations, setLocations] = useState<Array<{ id: number; name: string }>>([]);
 
   const {
     items: events,
@@ -38,7 +39,27 @@ export const EventsScreen: React.FC = () => {
 
   useEffect(() => {
     refresh();
+    fetchLocations();
   }, []);
+
+  const fetchLocations = async () => {
+    try {
+      const response = await locationService.getLocations({ page: 1, size: 100 });
+      const locationData = response._embedded?.content || response.content || [];
+      const formattedLocations = locationData.map((loc: any) => ({
+        id: loc.ycl_id,
+        name: loc.ycl_name,
+      }));
+      setLocations([{ id: 0, name: 'All Locations' }, ...formattedLocations]);
+    } catch (error) {
+      console.error('Error fetching locations:', error);
+    }
+  };
+
+  const handleLocationChange = (location: { id: number; name: string }) => {
+    setSelectedLocation(location.name);
+    // TODO: Filter events by location
+  };
 
   const getEventIcon = (eventType?: string) => {
     if (!eventType) return EVENT_ICONS.Default;
@@ -119,7 +140,11 @@ export const EventsScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScreenHeader selectedLocation={selectedLocation} />
+      <ScreenHeader
+        selectedLocation={selectedLocation}
+        locations={locations}
+        onLocationChange={handleLocationChange}
+      />
 
       <View style={styles.content}>
         <Text style={styles.title}>Events</Text>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { ScreenHeader } from '../components/common';
 import { theme } from '../theme';
+import { locationService } from '../services';
 
 interface QuickAction {
   id: string;
@@ -29,7 +30,30 @@ interface RecentAction {
 }
 
 export const ActionsScreen: React.FC = () => {
-  const [selectedLocation, setSelectedLocation] = useState('Downtown Office');
+  const [selectedLocation, setSelectedLocation] = useState('All Locations');
+  const [locations, setLocations] = useState<Array<{ id: number; name: string }>>([]);
+
+  useEffect(() => {
+    fetchLocations();
+  }, []);
+
+  const fetchLocations = async () => {
+    try {
+      const response = await locationService.getLocations({ page: 1, size: 100 });
+      const locationData = response._embedded?.content || response.content || [];
+      const formattedLocations = locationData.map((loc: any) => ({
+        id: loc.ycl_id,
+        name: loc.ycl_name,
+      }));
+      setLocations([{ id: 0, name: 'All Locations' }, ...formattedLocations]);
+    } catch (error) {
+      console.error('Error fetching locations:', error);
+    }
+  };
+
+  const handleLocationChange = (location: { id: number; name: string }) => {
+    setSelectedLocation(location.name);
+  };
 
   const recentActions: RecentAction[] = [
     {
@@ -140,7 +164,11 @@ export const ActionsScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScreenHeader selectedLocation={selectedLocation} />
+      <ScreenHeader
+        selectedLocation={selectedLocation}
+        locations={locations}
+        onLocationChange={handleLocationChange}
+      />
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <Text style={styles.title}>Quick Actions</Text>

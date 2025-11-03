@@ -18,6 +18,7 @@ import storageService from '../utils/storage';
 export const LocationsScreen: React.FC = () => {
   const [selectedLocation, setSelectedLocation] = useState('All Locations');
   const [isReady, setIsReady] = useState(false);
+  const [locationList, setLocationList] = useState<Array<{ id: number; name: string }>>([]);
 
   const {
     items: locations,
@@ -50,6 +51,22 @@ export const LocationsScreen: React.FC = () => {
       refresh();
     }
   }, [isReady]);
+
+  useEffect(() => {
+    // Update locationList when locations data changes
+    if (locations.length > 0) {
+      const formattedLocations = locations.map((loc) => ({
+        id: loc.ycl_id,
+        name: loc.ycl_name,
+      }));
+      setLocationList([{ id: 0, name: 'All Locations' }, ...formattedLocations]);
+    }
+  }, [locations]);
+
+  const handleLocationChange = (location: { id: number; name: string }) => {
+    setSelectedLocation(location.name);
+    // TODO: Filter locations by selected location if needed
+  };
 
   const renderLocationCard = ({ item }: { item: CameraLocation }) => {
     const isOnline = item.status;
@@ -85,7 +102,11 @@ export const LocationsScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScreenHeader selectedLocation={selectedLocation} />
+      <ScreenHeader
+        selectedLocation={selectedLocation}
+        locations={locationList}
+        onLocationChange={handleLocationChange}
+      />
 
       <View style={styles.content}>
         <Text style={styles.title}>Locations</Text>

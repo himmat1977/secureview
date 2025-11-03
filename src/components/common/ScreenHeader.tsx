@@ -4,14 +4,21 @@ import { LocationPicker } from './LocationPicker';
 import { Avatar } from './Avatar';
 import { theme } from '../../theme';
 
+interface Location {
+  id: number;
+  name: string;
+}
+
 interface ScreenHeaderProps {
   selectedLocation: string;
-  onLocationChange?: (location: any) => void;
+  locations?: Location[];
+  onLocationChange?: (location: Location) => void;
   onAvatarPress?: () => void;
 }
 
 export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
   selectedLocation,
+  locations,
   onLocationChange,
   onAvatarPress,
 }) => {
@@ -19,6 +26,7 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
     <View style={styles.container}>
       <LocationPicker
         selectedLocation={selectedLocation}
+        locations={locations}
         onLocationChange={onLocationChange}
       />
       <Avatar onPress={onAvatarPress} />
