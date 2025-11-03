@@ -68,15 +68,22 @@ export const LoginScreen: React.FC = () => {
       });
 
       // Handle successful login
-      console.log('Login successful:', response);
+      console.log('Login response:', JSON.stringify(response, null, 2));
 
-      // Store token - use whichever token field the API returns
-      const token = response.token || response.access_token;
+      // The API might return token in different formats, check all possibilities
+      const token = response.token ||
+                    response.access_token ||
+                    response.data?.token ||
+                    response.data?.access_token ||
+                    (typeof response === 'string' ? response : null);
+
+      console.log('Extracted token:', token ? 'Token found' : 'No token found');
+
       if (token) {
         // Use auth context to login - this will automatically trigger navigation
-        await login(token, response.user);
+        await login(token, response.user || response.data?.user);
       } else {
-        Alert.alert('Error', 'No authentication token received');
+        Alert.alert('Error', 'No authentication token received. Please check the API response in logs.');
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Login failed';

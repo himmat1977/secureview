@@ -42,11 +42,19 @@ class StorageService {
 
   // Auth specific methods
   async saveToken(token: string): Promise<void> {
-    return this.setItem(STORAGE_KEYS.USER_TOKEN, token);
+    console.log('=== SAVING TOKEN ===');
+    console.log('Token to save:', token ? `${token.substring(0, 20)}...` : 'null');
+    await this.setItem(STORAGE_KEYS.USER_TOKEN, token);
+    console.log('Token saved successfully');
   }
 
   async getToken(): Promise<string | null> {
-    return this.getItem<string>(STORAGE_KEYS.USER_TOKEN);
+    const token = await this.getItem<string>(STORAGE_KEYS.USER_TOKEN);
+    console.log('=== GETTING TOKEN ===');
+    console.log('Retrieved token:', token ? `${token.substring(0, 50)}...` : 'null');
+    console.log('Token type:', typeof token);
+    console.log('Token length:', token?.length || 0);
+    return token;
   }
 
   async removeToken(): Promise<void> {

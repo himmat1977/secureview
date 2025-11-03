@@ -56,21 +56,20 @@ export const EventsScreen: React.FC = () => {
     return '#5FBB97';
   };
 
-  const formatTimeAgo = (timestamp: string): string => {
-    const now = new Date().getTime();
-    const eventTime = new Date(timestamp).getTime();
-    const diffMinutes = Math.floor((now - eventTime) / (1000 * 60));
+  const formatDateTime = (timestamp: string): string => {
+    const date = new Date(timestamp);
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-    if (diffMinutes < 1) return 'Just now';
-    if (diffMinutes < 60) return `${diffMinutes} min ago`;
-    const diffHours = Math.floor(diffMinutes / 60);
-    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
-    const diffDays = Math.floor(diffHours / 24);
-    return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+    const month = months[date.getMonth()];
+    const day = date.getDate();
+    const year = date.getFullYear();
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+
+    return `${month} ${day}, ${year} ${hours}:${minutes}`;
   };
 
   const renderEventCard = ({ item }: { item: Event }) => {
-    const confidence = 85 + Math.floor(Math.random() * 15); // Mock confidence
     const eventColor = getEventColor(item.event_type);
     const eventIcon = getEventIcon(item.event_type);
 
@@ -86,20 +85,33 @@ export const EventsScreen: React.FC = () => {
         </View>
 
         <View style={styles.cardContent}>
-          <View style={styles.cardHeader}>
-            <Text style={styles.eventTitle} numberOfLines={1}>
-              {item.event_type?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'Event'}
-            </Text>
-            <View style={styles.confidenceBadge}>
-              <Text style={styles.confidenceText}>{confidence}%</Text>
+          <View style={styles.twoColumnLayout}>
+            <View style={styles.leftColumn}>
+              <Text style={styles.eventTitle} numberOfLines={1}>
+                {item.event_type?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'Event'}
+              </Text>
+
+              {item.event_camera && (
+                <Text style={styles.cameraName} numberOfLines={1}>
+                  📹 {item.event_camera}
+                </Text>
+              )}
+
+              <Text style={styles.location} numberOfLines={2}>
+                {item.event_description || 'No description'}
+              </Text>
+            </View>
+
+            <View style={styles.rightColumn}>
+              <Text style={styles.timeRight}>📅 {formatDateTime(item.created_date)}</Text>
+
+              {item.event_tag && (
+                <View style={styles.tagContainerRight}>
+                  <Text style={styles.tagText}>{item.event_tag}</Text>
+                </View>
+              )}
             </View>
           </View>
-
-          <Text style={styles.location} numberOfLines={1}>
-            {item.event_description || 'No description'}
-          </Text>
-
-          <Text style={styles.time}>{formatTimeAgo(item.event_timestamp)}</Text>
         </View>
       </TouchableOpacity>
     );
@@ -262,6 +274,27 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
   },
+  topRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: theme.spacing.sm,
+  },
+  middleRow: {
+    flexDirection: 'row',
+  },
+  twoColumnLayout: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  leftColumn: {
+    flex: 1,
+  },
+  rightColumn: {
+    alignItems: 'flex-end',
+    marginLeft: theme.spacing.sm,
+  },
   cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -275,6 +308,11 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: theme.spacing.sm,
   },
+  timeRight: {
+    fontSize: theme.typography.fontSize.xs,
+    color: theme.colors.textSecondary,
+    marginLeft: theme.spacing.sm,
+  },
   confidenceBadge: {
     backgroundColor: theme.colors.surface,
     paddingHorizontal: theme.spacing.sm,
@@ -285,6 +323,32 @@ const styles = StyleSheet.create({
     fontSize: theme.typography.fontSize.sm,
     fontWeight: theme.typography.fontWeight.semiBold,
     color: theme.colors.text,
+  },
+  cameraName: {
+    fontSize: theme.typography.fontSize.sm,
+    fontWeight: theme.typography.fontWeight.medium,
+    color: theme.colors.text,
+    marginBottom: theme.spacing.xs,
+  },
+  tagContainer: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#5FBB97',
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: 4,
+    borderRadius: theme.borderRadius.md,
+    marginBottom: theme.spacing.xs,
+  },
+  tagContainerRight: {
+    backgroundColor: '#5FBB97',
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: 4,
+    borderRadius: theme.borderRadius.md,
+    marginTop: theme.spacing.xs,
+  },
+  tagText: {
+    fontSize: theme.typography.fontSize.xs,
+    fontWeight: '600' as any,
+    color: theme.colors.background,
   },
   location: {
     fontSize: theme.typography.fontSize.sm,

@@ -36,6 +36,8 @@ export interface CameraResponse extends Camera {}
 export interface Event {
   event_id: number;
   camera_id: number;
+  event_camera?: string; // Camera name
+  event_tag?: string; // Event tag
   event_type?: string;
   event_description?: string;
   event_timestamp: string;
@@ -68,22 +70,37 @@ export interface EventResponse extends Event {}
 
 // Location Types
 export interface CameraLocation {
-  location_id: number;
-  location_code: string;
-  location_name: string;
-  location_address?: string;
-  location_city?: string;
-  location_state?: string;
-  location_zip?: string;
-  location_country?: string;
-  location_contact_name?: string;
-  location_contact_phone?: string;
-  location_contact_email?: string;
+  ycl_id: number;
+  ycl_code: string;
+  ycl_name: string;
+  ycl_type?: string;
+  ycl_description?: string;
+  ycl_address?: string;
+  ycl_city?: string;
+  ycl_province?: string;
+  ycl_postal_code?: string;
+  ycl_caller_id?: string;
+  ycl_cameras?: string;
+  ycl_company?: number;
+  ycl_events_enabled?: boolean;
+  ycl_entry_logging?: boolean;
   status: boolean;
-  created_by?: string;
-  modified_by?: string;
   created_date: string;
   modified_date: string;
+  ycl_contacts?: {
+    primary?: {
+      phone?: string;
+      email?: string;
+    };
+    secondary?: {
+      phone?: string;
+      email?: string;
+    } | null;
+  } | null;
+  camera_details?: Array<{
+    id: number;
+    name: string;
+  }>;
 }
 
 export interface CameraLocationCreate {
@@ -116,14 +133,41 @@ export interface PaginationParams {
 }
 
 export interface PaginatedResponse<T> {
-  content: T[];
-  totalElements: number;
-  totalPages: number;
-  size: number;
-  number: number;
-  first: boolean;
-  last: boolean;
-  empty: boolean;
+  // Spring HATEOAS format (_embedded.content)
+  _embedded?: {
+    content?: T[];
+  };
+
+  // Direct content array
+  content?: T[];
+
+  // Pagination metadata (can be nested in 'page' object or at root level)
+  page?: {
+    size?: number;
+    total_elements?: number;
+    totalElements?: number;
+    total_pages?: number;
+    totalPages?: number;
+    number?: number;
+  };
+
+  // Root level pagination metadata (alternative format)
+  totalElements?: number;
+  total_elements?: number;
+  totalPages?: number;
+  total_pages?: number;
+  size?: number;
+  number?: number;
+  first?: boolean;
+  last?: boolean;
+  empty?: boolean;
+
+  // Alternative data formats
+  data?: T[] | { content?: T[] };
+  total?: number;
+
+  // Allow any additional fields from API
+  [key: string]: any;
 }
 
 // Event Record Types

@@ -20,7 +20,7 @@ export function usePagination<T>(
   initialPageSize: number = 20
 ): UsePaginationReturn<T> {
   const [items, setItems] = useState<T[]>([]);
-  const [page, setPage] = useState<number>(0);
+  const [page, setPage] = useState<number>(1); // API pagination starts from 1
   const [size, setSize] = useState<number>(initialPageSize);
   const [totalPages, setTotalPages] = useState<number>(0);
   const [totalElements, setTotalElements] = useState<number>(0);
@@ -39,17 +39,41 @@ export function usePagination<T>(
           size,
         });
 
+        console.log('Pagination API response:', JSON.stringify(response, null, 2));
+
+        // Handle different API response structures
+        // Check for _embedded.content first (Spring HATEOAS format)
+        const content = response._embedded?.content ||
+                       response.content ||
+                       (response.data && typeof response.data === 'object' && !Array.isArray(response.data) ? response.data.content : undefined) ||
+                       (Array.isArray(response.data) ? response.data : undefined) ||
+                       [];
+
+        // Handle page info from different formats
+        const pageInfo = response.page || response;
+        const currentPage = pageInfo.number ?? response.number ?? pageNumber;
+        const pages = pageInfo.total_pages ?? pageInfo.totalPages ?? response.totalPages ?? 1;
+        const total = pageInfo.total_elements ?? pageInfo.totalElements ?? response.totalElements ?? content.length;
+
+        console.log('Parsed pagination data:', {
+          contentLength: content.length,
+          currentPage,
+          totalPages: pages,
+          totalElements: total
+        });
+
         if (append) {
-          setItems(prev => [...prev, ...response.content]);
+          setItems(prev => [...prev, ...content]);
         } else {
-          setItems(response.content);
+          setItems(content);
         }
 
-        setPage(response.number);
-        setTotalPages(response.totalPages);
-        setTotalElements(response.totalElements);
+        setPage(currentPage);
+        setTotalPages(pages);
+        setTotalElements(total);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Failed to fetch data';
+        console.error('Pagination fetch error:', errorMessage, err);
         setError(errorMessage);
       } finally {
         setLoading(false);
@@ -59,20 +83,20 @@ export function usePagination<T>(
   );
 
   const loadMore = useCallback(async () => {
-    if (page < totalPages - 1 && !loading) {
+    if (page < totalPages && !loading) {
       await fetchPage(page + 1, true);
     }
   }, [page, totalPages, loading, fetchPage]);
 
   const refresh = useCallback(async () => {
     setItems([]);
-    setPage(0);
-    await fetchPage(0, false);
+    setPage(1);
+    await fetchPage(1, false); // Start from page 1
   }, [fetchPage]);
 
   const setPageSize = useCallback((newSize: number) => {
     setSize(newSize);
-    setPage(0);
+    setPage(1); // Reset to page 1
     setItems([]);
   }, []);
 
@@ -84,7 +108,7 @@ export function usePagination<T>(
     totalElements,
     loading,
     error,
-    hasMore: page < totalPages - 1,
+    hasMore: page < totalPages,
     loadMore,
     refresh,
     setPageSize,

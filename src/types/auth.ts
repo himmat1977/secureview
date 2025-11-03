@@ -9,6 +9,12 @@ export interface LoginResponse {
   refresh_token?: string;
   user?: User;
   message?: string;
+  data?: {
+    token?: string;
+    access_token?: string;
+    user?: User;
+  };
+  [key: string]: any; // Allow any additional fields from API
 }
 
 export interface User {

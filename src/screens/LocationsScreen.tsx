@@ -13,9 +13,11 @@ import { theme } from '../theme';
 import { locationService } from '../services';
 import { usePagination } from '../hooks';
 import { CameraLocation } from '../types/camera';
+import storageService from '../utils/storage';
 
 export const LocationsScreen: React.FC = () => {
   const [selectedLocation, setSelectedLocation] = useState('All Locations');
+  const [isReady, setIsReady] = useState(false);
 
   const {
     items: locations,
@@ -26,12 +28,32 @@ export const LocationsScreen: React.FC = () => {
   } = usePagination<CameraLocation>(locationService.getLocations, 20);
 
   useEffect(() => {
-    refresh();
+    // Log to check if we're authenticated and wait before fetching
+    const checkAuth = async () => {
+      // Wait a bit for auth to complete
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      const token = await storageService.getToken();
+      console.log('=== Locations Screen Debug ===');
+      console.log('Token status:', token ? `Token exists (${token.substring(0, 20)}...)` : 'NO TOKEN FOUND!');
+      if (!token) {
+        console.error('CRITICAL: No authentication token found!');
+      }
+      setIsReady(true);
+    };
+    checkAuth();
   }, []);
+
+  useEffect(() => {
+    if (isReady) {
+      console.log('Authentication ready, fetching locations...');
+      refresh();
+    }
+  }, [isReady]);
 
   const renderLocationCard = ({ item }: { item: CameraLocation }) => {
     const isOnline = item.status;
-    const cameraCount = 12; // This should come from API
+    const cameraCount = item.camera_details?.length || 0;
 
     return (
       <TouchableOpacity style={styles.card} activeOpacity={0.8}>
@@ -41,7 +63,7 @@ export const LocationsScreen: React.FC = () => {
 
         <View style={styles.cardContent}>
           <View style={styles.cardHeader}>
-            <Text style={styles.locationName}>{item.location_name}</Text>
+            <Text style={styles.locationName}>{item.ycl_name}</Text>
             <View style={[styles.statusBadge, isOnline ? styles.online : styles.offline]}>
               <Text style={styles.statusDot}>●</Text>
               <Text style={[styles.statusText, isOnline ? styles.onlineText : styles.offlineText]}>
@@ -50,7 +72,7 @@ export const LocationsScreen: React.FC = () => {
             </View>
           </View>
 
-          <Text style={styles.address}>{item.location_address}</Text>
+          <Text style={styles.address}>{item.ycl_address || 'No address'}</Text>
 
           <View style={styles.cameraInfo}>
             <Text style={styles.cameraIcon}>📹</Text>
@@ -72,7 +94,7 @@ export const LocationsScreen: React.FC = () => {
         <FlatList
           data={locations}
           renderItem={renderLocationCard}
-          keyExtractor={(item) => item.location_id.toString()}
+          keyExtractor={(item) => item.ycl_id.toString()}
           contentContainerStyle={styles.listContainer}
           refreshing={loading}
           onRefresh={refresh}
