@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   SafeAreaView,
 } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { ScreenHeader } from '../components/common';
 import { theme } from '../theme';
 import { eventService, locationService } from '../services';
@@ -76,14 +77,23 @@ export const EntryExitScreen: React.FC = () => {
     return (
       <TouchableOpacity style={styles.card} activeOpacity={0.8}>
         <View style={[styles.avatar, isUnknown && styles.avatarGray]}>
-          <Text style={styles.avatarIcon}>{isVehicle ? '🚗' : '👤'}</Text>
+          <Icon
+            name={isVehicle ? 'car' : 'person'}
+            size={32}
+            color="#FFFFFF"
+          />
         </View>
 
         <View style={styles.cardContent}>
           <View style={styles.cardHeader}>
             <Text style={styles.name}>{isVehicle ? 'Unknown Vehicle' : personName}</Text>
             <View style={[styles.typeBadge, isEntry ? styles.entryBadge : styles.exitBadge]}>
-              <Text style={styles.typeIcon}>{isEntry ? '→' : '←'}</Text>
+              <Icon
+                name={isEntry ? 'arrow-forward' : 'arrow-back'}
+                size={14}
+                color={isEntry ? '#5FBB97' : '#FF9500'}
+                style={styles.typeIcon}
+              />
               <Text style={[styles.typeText, isEntry ? styles.entryText : styles.exitText]}>
                 {isEntry ? 'entry' : 'exit'}
               </Text>
@@ -174,9 +184,6 @@ const styles = StyleSheet.create({
   avatarGray: {
     backgroundColor: '#8E8E93',
   },
-  avatarIcon: {
-    fontSize: 28,
-  },
   cardContent: {
     flex: 1,
     justifyContent: 'center',
@@ -208,7 +215,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF3E0',
   },
   typeIcon: {
-    fontSize: 12,
     marginRight: 4,
   },
   typeText: {

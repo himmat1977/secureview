@@ -9,6 +9,7 @@ import {
   SafeAreaView,
   Dimensions,
 } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { ScreenHeader } from '../components/common';
 import { theme } from '../theme';
 import { cameraService, locationService } from '../services';
@@ -62,24 +63,23 @@ export const LiveScreen: React.FC = () => {
         <View style={styles.videoPlaceholder}>
           {isLive && (
             <View style={styles.liveBadge}>
-              <Text style={styles.liveText}>● LIVE</Text>
+              <Icon name="ellipse" size={8} color="#FFFFFF" style={styles.liveIcon} />
+              <Text style={styles.liveText}>LIVE</Text>
             </View>
           )}
           <View style={styles.qualityBadge}>
             <Text style={styles.qualityText}>{quality}</Text>
           </View>
 
-          <View style={styles.videoIcon}>
-            <Text style={styles.videoIconText}>📹</Text>
-          </View>
+          <Icon name="videocam" size={48} color="#C0C0C0" style={styles.videoIcon} />
 
           <TouchableOpacity style={styles.expandButton}>
-            <Text style={styles.expandIcon}>⤢</Text>
+            <Icon name="expand" size={18} color={theme.colors.textSecondary} />
           </TouchableOpacity>
         </View>
 
         <View style={styles.cameraInfo}>
-          <Text style={styles.cameraStatusIcon}>📹</Text>
+          <Icon name="videocam" size={14} color="#5FBB97" style={styles.cameraStatusIcon} />
           <Text style={styles.cameraName} numberOfLines={1}>
             {item.camera_location || 'Camera'}
           </Text>
@@ -173,11 +173,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.spacing.sm,
     paddingVertical: 4,
     borderRadius: theme.borderRadius.sm,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  liveIcon: {
+    marginRight: 4,
   },
   liveText: {
     color: theme.colors.background,
     fontSize: theme.typography.fontSize.xs,
-    fontWeight: theme.typography.fontWeight.bold,
+    fontWeight: theme.typography.fontWeight.bold as any,
   },
   qualityBadge: {
     position: 'absolute',
@@ -194,11 +199,6 @@ const styles = StyleSheet.create({
     fontWeight: theme.typography.fontWeight.bold,
   },
   videoIcon: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  videoIconText: {
-    fontSize: 48,
     opacity: 0.3,
   },
   expandButton: {
@@ -209,10 +209,8 @@ const styles = StyleSheet.create({
     height: 28,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  expandIcon: {
-    fontSize: 18,
-    color: theme.colors.textSecondary,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    borderRadius: 14,
   },
   cameraInfo: {
     flexDirection: 'row',
@@ -220,9 +218,7 @@ const styles = StyleSheet.create({
     marginTop: theme.spacing.sm,
   },
   cameraStatusIcon: {
-    fontSize: 12,
-    marginRight: 4,
-    color: '#5FBB97',
+    marginRight: 6,
   },
   cameraName: {
     fontSize: theme.typography.fontSize.sm,

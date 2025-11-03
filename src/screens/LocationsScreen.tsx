@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   SafeAreaView,
 } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { ScreenHeader } from '../components/common';
 import { theme } from '../theme';
 import { locationService } from '../services';
@@ -75,14 +76,19 @@ export const LocationsScreen: React.FC = () => {
     return (
       <TouchableOpacity style={styles.card} activeOpacity={0.8}>
         <View style={styles.iconContainer}>
-          <Text style={styles.icon}>🏢</Text>
+          <Icon name="business" size={36} color="#FFFFFF" />
         </View>
 
         <View style={styles.cardContent}>
           <View style={styles.cardHeader}>
             <Text style={styles.locationName}>{item.ycl_name}</Text>
             <View style={[styles.statusBadge, isOnline ? styles.online : styles.offline]}>
-              <Text style={styles.statusDot}>●</Text>
+              <Icon
+                name="ellipse"
+                size={8}
+                color={isOnline ? '#5FBB97' : '#FF3B30'}
+                style={styles.statusDot}
+              />
               <Text style={[styles.statusText, isOnline ? styles.onlineText : styles.offlineText]}>
                 {isOnline ? 'Online' : 'Offline'}
               </Text>
@@ -92,7 +98,7 @@ export const LocationsScreen: React.FC = () => {
           <Text style={styles.address}>{item.ycl_address || 'No address'}</Text>
 
           <View style={styles.cameraInfo}>
-            <Text style={styles.cameraIcon}>📹</Text>
+            <Icon name="videocam" size={16} color={theme.colors.textSecondary} style={styles.cameraIcon} />
             <Text style={styles.cameraCount}>{cameraCount} cameras</Text>
           </View>
         </View>
@@ -179,9 +185,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginRight: theme.spacing.md,
   },
-  icon: {
-    fontSize: 32,
-  },
   cardContent: {
     flex: 1,
     justifyContent: 'center',
@@ -213,7 +216,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFE8E8',
   },
   statusDot: {
-    fontSize: 8,
     marginRight: 4,
   },
   statusText: {
@@ -236,8 +238,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   cameraIcon: {
-    fontSize: 14,
-    marginRight: 4,
+    marginRight: 6,
   },
   cameraCount: {
     fontSize: theme.typography.fontSize.sm,

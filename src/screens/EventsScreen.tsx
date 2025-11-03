@@ -9,6 +9,7 @@ import {
   SafeAreaView,
   ScrollView,
 } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { ScreenHeader } from '../components/common';
 import { theme } from '../theme';
 import { eventService, locationService } from '../services';
@@ -18,11 +19,11 @@ import { Event } from '../types/camera';
 const EVENT_TYPES = ['All', 'Person', 'Vehicle', 'Motion', 'Alert'];
 
 const EVENT_ICONS: Record<string, string> = {
-  Person: '👤',
-  Vehicle: '🚗',
-  Motion: '📊',
-  Alert: '⚠️',
-  Default: '📹',
+  Person: 'person',
+  Vehicle: 'car',
+  Motion: 'analytics',
+  Alert: 'alert-circle',
+  Default: 'videocam',
 };
 
 export const EventsScreen: React.FC = () => {
@@ -98,10 +99,10 @@ export const EventsScreen: React.FC = () => {
       <TouchableOpacity style={styles.card} activeOpacity={0.8}>
         <View style={[styles.thumbnail, { backgroundColor: '#E8E8EA' }]}>
           <View style={[styles.iconCircle, { backgroundColor: eventColor + '20' }]}>
-            <Text style={styles.eventIcon}>{eventIcon}</Text>
+            <Icon name={eventIcon} size={28} color={eventColor} />
           </View>
           <TouchableOpacity style={styles.playButton}>
-            <Text style={styles.playIcon}>▶</Text>
+            <Icon name="play" size={16} color="#FFFFFF" style={styles.playIcon} />
           </TouchableOpacity>
         </View>
 
@@ -113,9 +114,12 @@ export const EventsScreen: React.FC = () => {
               </Text>
 
               {item.event_camera && (
-                <Text style={styles.cameraName} numberOfLines={1}>
-                  📹 {item.event_camera}
-                </Text>
+                <View style={styles.cameraNameContainer}>
+                  <Icon name="videocam" size={14} color={theme.colors.textSecondary} style={styles.cameraIcon} />
+                  <Text style={styles.cameraName} numberOfLines={1}>
+                    {item.event_camera}
+                  </Text>
+                </View>
               )}
 
               <Text style={styles.location} numberOfLines={2}>
@@ -124,7 +128,10 @@ export const EventsScreen: React.FC = () => {
             </View>
 
             <View style={styles.rightColumn}>
-              <Text style={styles.timeRight}>📅 {formatDateTime(item.created_date)}</Text>
+              <View style={styles.dateContainer}>
+                <Icon name="calendar" size={12} color={theme.colors.textSecondary} style={styles.dateIcon} />
+                <Text style={styles.timeRight}>{formatDateTime(item.created_date)}</Text>
+              </View>
 
               {item.event_tag && (
                 <View style={styles.tagContainerRight}>
@@ -276,9 +283,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  eventIcon: {
-    fontSize: 24,
-  },
   playButton: {
     position: 'absolute',
     bottom: theme.spacing.sm,
@@ -291,8 +295,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   playIcon: {
-    color: theme.colors.background,
-    fontSize: 12,
     marginLeft: 2,
   },
   cardContent: {
@@ -333,10 +335,17 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: theme.spacing.sm,
   },
+  dateContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: theme.spacing.xs,
+  },
+  dateIcon: {
+    marginRight: 4,
+  },
   timeRight: {
     fontSize: theme.typography.fontSize.xs,
     color: theme.colors.textSecondary,
-    marginLeft: theme.spacing.sm,
   },
   confidenceBadge: {
     backgroundColor: theme.colors.surface,
@@ -349,11 +358,19 @@ const styles = StyleSheet.create({
     fontWeight: theme.typography.fontWeight.semiBold,
     color: theme.colors.text,
   },
+  cameraNameContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: theme.spacing.xs,
+  },
+  cameraIcon: {
+    marginRight: 4,
+  },
   cameraName: {
     fontSize: theme.typography.fontSize.sm,
-    fontWeight: theme.typography.fontWeight.medium,
+    fontWeight: theme.typography.fontWeight.medium as any,
     color: theme.colors.text,
-    marginBottom: theme.spacing.xs,
+    flex: 1,
   },
   tagContainer: {
     alignSelf: 'flex-start',

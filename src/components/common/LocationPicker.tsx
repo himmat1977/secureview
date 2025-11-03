@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Modal, FlatList } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { theme } from '../../theme';
 
 interface Location {
@@ -32,8 +33,9 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
         onPress={() => setIsVisible(true)}
         activeOpacity={0.7}
       >
+        <Icon name="location" size={20} color={theme.colors.primary} style={styles.locationIcon} />
         <Text style={styles.locationText}>{selectedLocation}</Text>
-        <Text style={styles.arrow}>▼</Text>
+        <Icon name="chevron-down" size={16} color={theme.colors.textSecondary} />
       </TouchableOpacity>
 
       <Modal
@@ -57,6 +59,7 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
                   style={styles.locationItem}
                   onPress={() => handleSelectLocation(item)}
                 >
+                  <Icon name="location-outline" size={18} color={theme.colors.primary} style={styles.locationItemIcon} />
                   <Text style={styles.locationItemText}>{item.name}</Text>
                 </TouchableOpacity>
               )}
@@ -74,15 +77,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: theme.spacing.sm,
   },
-  locationText: {
-    fontSize: theme.typography.fontSize.lg,
-    fontWeight: theme.typography.fontWeight.semiBold,
-    color: theme.colors.text,
+  locationIcon: {
     marginRight: theme.spacing.xs,
   },
-  arrow: {
-    fontSize: theme.typography.fontSize.sm,
-    color: theme.colors.textSecondary,
+  locationText: {
+    fontSize: theme.typography.fontSize.lg,
+    fontWeight: theme.typography.fontWeight.semiBold as any,
+    color: theme.colors.text,
+    marginRight: theme.spacing.xs,
+    flex: 1,
   },
   modalOverlay: {
     flex: 1,
@@ -98,14 +101,19 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: theme.typography.fontSize.xl,
-    fontWeight: theme.typography.fontWeight.bold,
+    fontWeight: theme.typography.fontWeight.bold as any,
     color: theme.colors.text,
     marginBottom: theme.spacing.md,
   },
   locationItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingVertical: theme.spacing.md,
     borderBottomWidth: 1,
     borderBottomColor: theme.colors.divider,
+  },
+  locationItemIcon: {
+    marginRight: theme.spacing.sm,
   },
   locationItemText: {
     fontSize: theme.typography.fontSize.base,

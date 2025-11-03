@@ -8,6 +8,7 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { ScreenHeader } from '../components/common';
 import { theme } from '../theme';
 import { locationService } from '../services';
@@ -16,7 +17,7 @@ interface QuickAction {
   id: string;
   title: string;
   subtitle: string;
-  icon: string;
+  iconName: string;
   color: string;
   onPress: () => void;
 }
@@ -77,7 +78,7 @@ export const ActionsScreen: React.FC = () => {
       id: '1',
       title: 'Call 911',
       subtitle: 'Emergency services',
-      icon: '📞',
+      iconName: 'call',
       color: '#D43F3A',
       onPress: () => Alert.alert('Emergency Call', 'This would initiate a 911 call'),
     },
@@ -85,7 +86,7 @@ export const ActionsScreen: React.FC = () => {
       id: '2',
       title: 'Call Security',
       subtitle: 'On-site security team',
-      icon: '🛡️',
+      iconName: 'shield-checkmark',
       color: theme.colors.background,
       onPress: () => Alert.alert('Security Call', 'Calling security team...'),
     },
@@ -93,7 +94,7 @@ export const ActionsScreen: React.FC = () => {
       id: '3',
       title: 'Open Gate',
       subtitle: 'Remote gate access',
-      icon: '🚪',
+      iconName: 'enter',
       color: theme.colors.background,
       onPress: () => Alert.alert('Gate Control', 'Opening gate...'),
     },
@@ -101,7 +102,7 @@ export const ActionsScreen: React.FC = () => {
       id: '4',
       title: 'Trigger Siren',
       subtitle: 'Sound alarm',
-      icon: '🔔',
+      iconName: 'notifications',
       color: theme.colors.background,
       onPress: () => Alert.alert('Alarm', 'Trigger siren alarm?', [
         { text: 'Cancel', style: 'cancel' },
@@ -112,7 +113,7 @@ export const ActionsScreen: React.FC = () => {
       id: '5',
       title: 'Floodlights',
       subtitle: 'Turn on exterior lights',
-      icon: '💡',
+      iconName: 'bulb',
       color: theme.colors.background,
       onPress: () => Alert.alert('Lights', 'Turning on floodlights...'),
     },
@@ -120,7 +121,7 @@ export const ActionsScreen: React.FC = () => {
       id: '6',
       title: 'Create Incident',
       subtitle: 'Log new incident report',
-      icon: '📋',
+      iconName: 'document-text',
       color: theme.colors.background,
       onPress: () => Alert.alert('Incident Report', 'Create new incident report...'),
     },
@@ -137,9 +138,12 @@ export const ActionsScreen: React.FC = () => {
       onPress={action.onPress}
       activeOpacity={0.8}
     >
-      <Text style={[styles.actionIcon, isEmergency && styles.emergencyIcon]}>
-        {action.icon}
-      </Text>
+      <Icon
+        name={action.iconName}
+        size={isEmergency ? 48 : 36}
+        color={isEmergency ? '#FFFFFF' : theme.colors.text}
+        style={styles.actionIcon}
+      />
       <Text style={[styles.actionTitle, isEmergency && styles.emergencyTitle]}>
         {action.title}
       </Text>
@@ -245,11 +249,7 @@ const styles = StyleSheet.create({
     width: '48%',
   },
   actionIcon: {
-    fontSize: 32,
     marginBottom: theme.spacing.sm,
-  },
-  emergencyIcon: {
-    fontSize: 40,
   },
   actionTitle: {
     fontSize: theme.typography.fontSize.base,
