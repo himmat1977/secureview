@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(dir:*)",
+      "Bash(npm install:*)",
+      "Bash(adb devices:*)",
+      "Bash(npm start)",
+      "Bash(where:*)",
+      "Bash(npm run android:*)",
+      "Bash(npx @react-native-community/cli@latest init:*)",
+      "Bash(xcopy /E /I /Y \"..\\TempSecureView\\ios\" \"ios\")",
+      "Bash(robocopy:*)",
+      "Bash(exit 0)",
+      "Bash(powershell:*)",
+      "Bash(findstr:*)",
+      "Bash(ren:*)",
+      "Bash(test:*)",
+      "Bash(export ANDROID_HOME=\"$LOCALAPPDATA/Android/Sdk\")",
+      "Bash(export PATH:*)",
+      "Bash(export:*)",
+      "Bash(emulator -list-avds:*)",
+      "Bash(./gradlew.bat:*)",
+      "Bash(npx react-native:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
