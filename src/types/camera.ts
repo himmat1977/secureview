@@ -37,6 +37,8 @@ export interface Event {
   event_id: number;
   camera_id: number;
   event_camera?: string; // Camera name
+  event_location?: string; // Location name
+  location_id?: number; // Location ID
   event_tag?: string; // Event tag
   event_type?: string;
   event_description?: string;

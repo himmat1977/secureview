@@ -122,7 +122,16 @@ export const EventsScreen: React.FC = () => {
                 </View>
               )}
 
-              <Text style={styles.location} numberOfLines={2}>
+              {item.event_location && (
+                <View style={styles.locationNameContainer}>
+                  <Icon name="location" size={14} color="#5FBB97" style={styles.locationIcon} />
+                  <Text style={styles.locationName} numberOfLines={1}>
+                    {item.event_location}
+                  </Text>
+                </View>
+              )}
+
+              <Text style={styles.description} numberOfLines={2}>
                 {item.event_description || 'No description'}
               </Text>
             </View>
@@ -372,6 +381,20 @@ const styles = StyleSheet.create({
     color: theme.colors.text,
     flex: 1,
   },
+  locationNameContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: theme.spacing.xs,
+  },
+  locationIcon: {
+    marginRight: 4,
+  },
+  locationName: {
+    fontSize: theme.typography.fontSize.sm,
+    fontWeight: theme.typography.fontWeight.medium as any,
+    color: '#5FBB97',
+    flex: 1,
+  },
   tagContainer: {
     alignSelf: 'flex-start',
     backgroundColor: '#5FBB97',
@@ -392,7 +415,7 @@ const styles = StyleSheet.create({
     fontWeight: '600' as any,
     color: theme.colors.background,
   },
-  location: {
+  description: {
     fontSize: theme.typography.fontSize.sm,
     color: theme.colors.textSecondary,
     marginBottom: theme.spacing.xs,
