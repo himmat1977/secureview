@@ -11,14 +11,14 @@ set PATH=%JAVA_HOME%\bin;%ANDROID_HOME%\platform-tools;%ANDROID_HOME%\emulator;%
 
 echo Cleaning Android build...
 cd android
-call gradlew.bat clean
+call .\gradlew.bat clean
 cd ..
 
 echo.
 echo Cleaning Metro cache...
 call npx react-native start --reset-cache &
 timeout /t 5 /nobreak >nul
-taskkill /F /IM node.exe
+taskkill /F /IM node.exe 2>nul
 
 echo.
 echo Rebuilding Android app...
