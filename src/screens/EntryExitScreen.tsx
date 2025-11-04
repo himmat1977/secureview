@@ -11,25 +11,20 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 import { ScreenHeader } from '../components/common';
 import { theme } from '../theme';
-import { eventService, locationService } from '../services';
+import { visitorLogService, locationService } from '../services';
 import { usePagination } from '../hooks';
-import { Event } from '../types/camera';
-
-interface EntryExitEvent extends Event {
-  personName?: string;
-  isEntry: boolean;
-}
+import { VisitorLog } from '../types/camera';
 
 export const EntryExitScreen: React.FC = () => {
   const [selectedLocation, setSelectedLocation] = useState('All Locations');
   const [locations, setLocations] = useState<Array<{ id: number; name: string }>>([]);
 
   const {
-    items: events,
+    items: visitorLogs,
     loading,
     refresh,
     loadMore,
-  } = usePagination<Event>(eventService.getEvents, 20);
+  } = usePagination<VisitorLog>(visitorLogService.getVisitorLogs, 20);
 
   useEffect(() => {
     refresh();
@@ -67,12 +62,13 @@ export const EntryExitScreen: React.FC = () => {
     return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
   };
 
-  const renderEntryExitCard = ({ item, index }: { item: Event; index: number }) => {
-    const isEntry = index % 2 === 0;
-    const confidence = 82 + Math.floor(Math.random() * 18);
-    const isVehicle = item.event_type?.includes('vehicle');
-    const isUnknown = index % 4 === 0;
-    const personName = isUnknown ? 'Unknown' : ['John Smith', 'Sarah Johnson', 'Mike Davis'][index % 3];
+  const renderEntryExitCard = ({ item }: { item: VisitorLog }) => {
+    const isEntry = item.entry_type === 'entry';
+    const isVehicle = item.visitor_type === 'vehicle';
+    const isUnknown = !item.visitor_name || item.visitor_name.toLowerCase().includes('unknown');
+    const displayName = isVehicle
+      ? (item.license_plate ? `Vehicle: ${item.license_plate}` : 'Unknown Vehicle')
+      : (item.visitor_name || 'Unknown Person');
 
     return (
       <TouchableOpacity style={styles.card} activeOpacity={0.8}>
@@ -86,7 +82,7 @@ export const EntryExitScreen: React.FC = () => {
 
         <View style={styles.cardContent}>
           <View style={styles.cardHeader}>
-            <Text style={styles.name}>{isVehicle ? 'Unknown Vehicle' : personName}</Text>
+            <Text style={styles.name}>{displayName}</Text>
             <View style={[styles.typeBadge, isEntry ? styles.entryBadge : styles.exitBadge]}>
               <Icon
                 name={isEntry ? 'arrow-forward' : 'arrow-back'}
@@ -101,15 +97,17 @@ export const EntryExitScreen: React.FC = () => {
           </View>
 
           <Text style={styles.location} numberOfLines={1}>
-            {item.event_description || 'Main Entrance'}
+            {item.location_name || item.camera_name || 'Main Entrance'}
           </Text>
 
           <View style={styles.footer}>
-            <Text style={styles.time}>{formatTimeAgo(item.event_timestamp)}</Text>
-            <View style={styles.confidenceContainer}>
-              <Text style={styles.confidenceLabel}>Confidence</Text>
-              <Text style={styles.confidenceValue}>{confidence}%</Text>
-            </View>
+            <Text style={styles.time}>{formatTimeAgo(item.capture_time)}</Text>
+            {item.confidence && (
+              <View style={styles.confidenceContainer}>
+                <Text style={styles.confidenceLabel}>Confidence</Text>
+                <Text style={styles.confidenceValue}>{Math.round(item.confidence)}%</Text>
+              </View>
+            )}
           </View>
         </View>
       </TouchableOpacity>
@@ -126,9 +124,9 @@ export const EntryExitScreen: React.FC = () => {
 
       <View style={styles.content}>
         <FlatList
-          data={events}
+          data={visitorLogs}
           renderItem={renderEntryExitCard}
-          keyExtractor={(item) => item.event_id.toString()}
+          keyExtractor={(item) => item.log_id.toString()}
           contentContainerStyle={styles.listContainer}
           refreshing={loading}
           onRefresh={refresh}
@@ -138,7 +136,7 @@ export const EntryExitScreen: React.FC = () => {
             loading ? (
               <ActivityIndicator size="large" color="#5FBB97" style={styles.loader} />
             ) : (
-              <Text style={styles.emptyText}>No entry/exit events found</Text>
+              <Text style={styles.emptyText}>No entry/exit logs found</Text>
             )
           }
         />

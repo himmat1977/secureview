@@ -198,3 +198,27 @@ export interface CameraEventRecordResponse {
 export interface FetchPlaybacksRequest {
   location_id: number;
 }
+
+// Visitor Log Types (Entry/Exit)
+export interface VisitorLog {
+  log_id: number;
+  location_id: number;
+  location_name?: string;
+  camera_id?: number;
+  camera_name?: string;
+  visitor_name?: string;
+  visitor_type?: 'person' | 'vehicle' | 'unknown';
+  entry_type?: 'entry' | 'exit';
+  capture_time: string;
+  image_url?: string;
+  video_url?: string;
+  confidence?: number;
+  license_plate?: string;
+  vehicle_type?: string;
+  metadata?: Record<string, any>;
+  status: boolean;
+  created_date: string;
+  modified_date: string;
+}
+
+export interface VisitorLogResponse extends VisitorLog {}
