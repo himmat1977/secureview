@@ -50,25 +50,27 @@ export const EntryExitScreen: React.FC = () => {
     // TODO: Filter events by location
   };
 
-  const formatTimeAgo = (timestamp: string): string => {
+  const formatTimeAgo = (timestamp: number): string => {
     const now = new Date().getTime();
-    const eventTime = new Date(timestamp).getTime();
-    const diffMinutes = Math.floor((now - eventTime) / (1000 * 60));
+    const diffMinutes = Math.floor((now - timestamp) / (1000 * 60));
 
     if (diffMinutes < 1) return 'Just now';
     if (diffMinutes < 60) return `${diffMinutes} min ago`;
     const diffHours = Math.floor(diffMinutes / 60);
     if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
-    return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+    const diffDays = Math.floor(diffHours / 24);
+    return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
   };
 
   const renderEntryExitCard = ({ item }: { item: VisitorLog }) => {
-    const isEntry = item.entry_type === 'entry';
-    const isVehicle = item.visitor_type === 'vehicle';
-    const isUnknown = !item.visitor_name || item.visitor_name.toLowerCase().includes('unknown');
+    const isEntry = item.access_type === 'ENTRY';
+    const isVehicle = item.vehicle_info && (item.vehicle_info === 'TRUCK' || item.vehicle_info === 'CAR');
+    const driverName = item.external_driver_name;
+    const isUnknown = !driverName;
+
     const displayName = isVehicle
-      ? (item.license_plate ? `Vehicle: ${item.license_plate}` : 'Unknown Vehicle')
-      : (item.visitor_name || 'Unknown Person');
+      ? (item.license_plate ? `${item.vehicle_info}: ${item.license_plate}` : `Unknown ${item.vehicle_info || 'Vehicle'}`)
+      : (driverName || 'Unknown Visitor');
 
     return (
       <TouchableOpacity style={styles.card} activeOpacity={0.8}>
@@ -88,7 +90,6 @@ export const EntryExitScreen: React.FC = () => {
                 name={isEntry ? 'arrow-forward' : 'arrow-back'}
                 size={14}
                 color={isEntry ? '#5FBB97' : '#FF9500'}
-                style={styles.typeIcon}
               />
               <Text style={[styles.typeText, isEntry ? styles.entryText : styles.exitText]}>
                 {isEntry ? 'entry' : 'exit'}
@@ -97,15 +98,14 @@ export const EntryExitScreen: React.FC = () => {
           </View>
 
           <Text style={styles.location} numberOfLines={1}>
-            {item.location_name || item.camera_name || 'Main Entrance'}
+            {item.visitor_company || item.visitor_purpose || 'Visitor'}
           </Text>
 
           <View style={styles.footer}>
             <Text style={styles.time}>{formatTimeAgo(item.capture_time)}</Text>
-            {item.confidence && (
+            {item.capture_type && (
               <View style={styles.confidenceContainer}>
-                <Text style={styles.confidenceLabel}>Confidence</Text>
-                <Text style={styles.confidenceValue}>{Math.round(item.confidence)}%</Text>
+                <Text style={styles.confidenceLabel}>{item.capture_type}</Text>
               </View>
             )}
           </View>
@@ -126,7 +126,7 @@ export const EntryExitScreen: React.FC = () => {
         <FlatList
           data={visitorLogs}
           renderItem={renderEntryExitCard}
-          keyExtractor={(item) => item.log_id.toString()}
+          keyExtractor={(item) => item.id.toString()}
           contentContainerStyle={styles.listContainer}
           refreshing={loading}
           onRefresh={refresh}

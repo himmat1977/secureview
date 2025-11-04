@@ -200,25 +200,35 @@ export interface FetchPlaybacksRequest {
 }
 
 // Visitor Log Types (Entry/Exit)
+// Based on actual API response from /v2/yard-visitor-log
 export interface VisitorLog {
-  log_id: number;
-  location_id: number;
-  location_name?: string;
-  camera_id?: number;
-  camera_name?: string;
-  visitor_name?: string;
-  visitor_type?: 'person' | 'vehicle' | 'unknown';
-  entry_type?: 'entry' | 'exit';
-  capture_time: string;
-  image_url?: string;
-  video_url?: string;
-  confidence?: number;
-  license_plate?: string;
-  vehicle_type?: string;
-  metadata?: Record<string, any>;
-  status: boolean;
-  created_date: string;
-  modified_date: string;
+  id: number;
+  capture_type?: 'MANUAL' | 'AUTO';
+  access_type?: 'ENTRY' | 'EXIT';
+  operator_type?: string;
+  driver?: number | null;
+  driver_type?: string | null;
+  external_driver_name?: string | null;
+  driver_license_no?: string | null;
+  driver_email?: string | null;
+  visitor_phone_number?: string | null;
+  visitor_company?: string | null;
+  visitor_purpose?: string | null;
+  license_image?: string | null;
+  license_plate?: string | null;
+  capture_time: number; // Unix timestamp in milliseconds
+  camera?: any;
+  image?: string | null;
+  vehicle_make?: string | null;
+  vehicle_model?: string | null;
+  vehicle_color?: string | null;
+  truck?: string | null;
+  trailer?: string | null;
+  trailer_plate?: string | null;
+  vehicle_info?: string | null; // TRUCK, CAR, etc
+  safety_vest?: string | null;
+  damages?: string | null;
+  note?: string | null;
 }
 
 export interface VisitorLogResponse extends VisitorLog {}
