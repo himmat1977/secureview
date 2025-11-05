@@ -110,20 +110,21 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   tabIcon: {
-    fontSize: 20,
-    marginBottom: 2,
+    fontSize: 24,
+    marginBottom: 4,
     opacity: 0.5,
   },
   tabIconActive: {
     opacity: 1,
   },
   tabLabel: {
-    fontSize: theme.typography.fontSize.xs,
+    fontSize: theme.typography.fontSize.sm,
     color: theme.colors.textSecondary,
-    fontWeight: theme.typography.fontWeight.medium,
+    fontWeight: '600' as any,
   },
   tabLabelActive: {
     color: '#5FBB97',
+    fontWeight: '700' as any,
   },
   badge: {
     position: 'absolute',
