@@ -33,9 +33,9 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
         onPress={() => setIsVisible(true)}
         activeOpacity={0.7}
       >
-        <Icon name="location" size={20} color={theme.colors.primary} style={styles.locationIcon} />
-        <Text style={styles.locationText}>{selectedLocation}</Text>
-        <Icon name="chevron-down" size={16} color={theme.colors.textSecondary} />
+        <Icon name="location" size={18} color={theme.colors.primary} style={styles.locationIcon} />
+        <Text style={styles.locationText} numberOfLines={1}>{selectedLocation}</Text>
+        <Icon name="chevron-down" size={14} color={theme.colors.textSecondary} />
       </TouchableOpacity>
 
       <Modal
@@ -76,16 +76,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: theme.spacing.sm,
+    maxWidth: '70%',
   },
   locationIcon: {
     marginRight: theme.spacing.xs,
   },
   locationText: {
-    fontSize: theme.typography.fontSize.lg,
+    fontSize: theme.typography.fontSize.base,
     fontWeight: theme.typography.fontWeight.semiBold as any,
     color: theme.colors.text,
     marginRight: theme.spacing.xs,
-    flex: 1,
+    flexShrink: 1,
   },
   modalOverlay: {
     flex: 1,
