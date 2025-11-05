@@ -1,6 +1,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Text, View, StyleSheet } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
 import {
   LocationsScreen,
   LiveScreen,
@@ -12,9 +13,14 @@ import { theme } from '../theme';
 
 const Tab = createBottomTabNavigator();
 
-const TabIcon = ({ icon, label, focused }: { icon: string; label: string; focused: boolean }) => (
+const TabIcon = ({ iconName, label, focused }: { iconName: string; label: string; focused: boolean }) => (
   <View style={styles.tabItem}>
-    <Text style={[styles.tabIcon, focused && styles.tabIconActive]}>{icon}</Text>
+    <Icon
+      name={iconName}
+      size={26}
+      color={focused ? '#5FBB97' : theme.colors.textSecondary}
+      style={styles.tabIcon}
+    />
     <Text style={[styles.tabLabel, focused && styles.tabLabelActive]}>{label}</Text>
   </View>
 );
@@ -42,7 +48,7 @@ export const TabNavigator = () => {
         component={LocationsScreen}
         options={{
           tabBarIcon: ({ focused }) => (
-            <TabIcon icon="📍" label="Locations" focused={focused} />
+            <TabIcon iconName="location" label="Locations" focused={focused} />
           ),
         }}
       />
@@ -51,7 +57,7 @@ export const TabNavigator = () => {
         component={LiveScreen}
         options={{
           tabBarIcon: ({ focused }) => (
-            <TabIcon icon="📹" label="Live" focused={focused} />
+            <TabIcon iconName="videocam" label="Live" focused={focused} />
           ),
         }}
       />
@@ -61,7 +67,7 @@ export const TabNavigator = () => {
         options={{
           tabBarIcon: ({ focused }) => (
             <View>
-              <TabIcon icon="🚪" label="Entry/Exit" focused={focused} />
+              <TabIcon iconName="log-in" label="Entry/Exit" focused={focused} />
               <Badge count={12} />
             </View>
           ),
@@ -73,7 +79,7 @@ export const TabNavigator = () => {
         options={{
           tabBarIcon: ({ focused }) => (
             <View>
-              <TabIcon icon="⚠️" label="Events" focused={focused} />
+              <TabIcon iconName="alert-circle" label="Events" focused={focused} />
               <Badge count={8} />
             </View>
           ),
@@ -85,7 +91,7 @@ export const TabNavigator = () => {
         options={{
           tabBarIcon: ({ focused }) => (
             <View>
-              <TabIcon icon="⚡" label="Actions" focused={focused} />
+              <TabIcon iconName="flash" label="Actions" focused={focused} />
               <Badge count={3} />
             </View>
           ),
@@ -110,12 +116,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   tabIcon: {
-    fontSize: 24,
     marginBottom: 4,
-    opacity: 0.5,
-  },
-  tabIconActive: {
-    opacity: 1,
   },
   tabLabel: {
     fontSize: theme.typography.fontSize.sm,
